@@ -1,0 +1,5 @@
+Bank
+
+user- login/register
+
+login success// -> view/deposit/withdraw/exit
