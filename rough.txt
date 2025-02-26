@@ -2,4 +2,4 @@ Bank
 
 user- login/register
 
-login success// -> view/deposit/withdraw/exit
+login success// -> view/addbooks/borrow book/exit
