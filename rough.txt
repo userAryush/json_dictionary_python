@@ -1,5 +1,0 @@
-Bank
-
-user- login/register
-
-login success// -> view/addbooks/borrow book/exit
