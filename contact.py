@@ -98,7 +98,8 @@ def json_to_dictionary():
                 info_dict = json.loads(i)
                 information.update(info_dict)
             except json.JSONDecodeError:
-                continue    
+                continue 
+    print(information)   
     return information
     
     

@@ -4,10 +4,10 @@ def register():
     print("\n--------------Registration Page--------------\n")
     user = input("Username: ")
     password = input("Password: ")
-    button = input("Type register or cancel: ").lower()
+    button = input("Type submit or cancel: ").lower()
     if button == 'cancel':
         return
-    elif button == 'register':
+    elif button == 'submit':
         
     
         user_details_dictionary = user_json_to_dict('librarylogin.txt')
@@ -47,11 +47,11 @@ def login():
     print("\n--------------Login Page--------------\n")
     user = input("Admin: ")
     password = input("Password: ")
-    button = input("Type login or cancel: ").lower()
+    button = input("Type sumbit or cancel: ").lower()
     if button == 'cancel':
         return
-    elif button == 'login':
-        user_detail_dictionary = user_json_to_dict('librarylogin.txt')
+    elif button == 'submit':
+        user_detail_dictionary= user_json_to_dict('librarylogin.txt')
         
         if user not in user_detail_dictionary:
             reg = input(f"{user} is not registered yet!\nDo you want to register/login again?(register/login): ")
@@ -71,22 +71,22 @@ def login():
                 
             
 def user_json_to_dict(filename):
-    user_details = {}
-    
-    with open(filename) as file:
+    user_information = {}
+    with open(filename, 'r') as file:
         user_data = file.read()
-        
+    
     user_data_list = user_data.split("|")
     
     for i in user_data_list:
-        if i:
+        if i: #value cha ki nai checking to avoid empty i
             try:
-                user_data_dict = json.loads(i)
-                user_details.update(user_data_dict)
+                info_dict = json.loads(i)
+                user_information.update(info_dict)
             except json.JSONDecodeError:
-                continue
+                continue 
     
-    return user_details
+    return user_information
+
 
 def add_book():
     book_name = input('Book name: ')
@@ -94,9 +94,8 @@ def add_book():
     book_count = int(input('Book quantity: '))
     filename = 'books.txt'
     
-    book_dict = {'book':book_name,'author':author,'quantity':book_count}
+    book_dict = {book_name:{"author":author,"quantity":book_count}}
     
-    # books_dict = user_json_to_dict('books.txt')
     
     with open(filename) as file:
         data = file.read()
@@ -114,31 +113,65 @@ def add_book():
         if len(existing_books_list)>0:
             file.write('|')
         file.write(books_json)
+        print("Successfully added in the library!")
         
 
 def borrow_book():
-    pass
+    books_dict = user_json_to_dict('books.txt')
+    
+    if not books_dict:
+        print("No books available in the library.")
+        return
+ 
+    print("Available books: ")
+    for idx, book in enumerate(books_dict.keys()):
+        print(f"{idx}. {book} ")
+        
+        
+    book_name = input("Enter the name of book you want to borrow: ")
+    if book_name not in books_dict:
+        print(f"Sorry, '{book_name}' is not available in the library.")
+        return
+    if books_dict[book_name]["quantity"] > 0:
+        books_dict[book_name]["quantity"] -= 1  # Reduce quantity by 1
+        print(f"You have successfully borrowed '{book_name}'.")
+    else:
+        print(f"Sorry, '{book_name}' is currently out of stock.")
+        return
+
+    with open('books.txt', 'w') as file:
+        book_entries = [json.dumps({key: value}) for key, value in books_dict.items()]
+        file.write("|".join(book_entries))  # Store in the same format
+
+    print("Library records updated successfully!")
+        
+    
 
 def view_books():
     books_dict = user_json_to_dict('books.txt')
+
     if not books_dict:
-        print("There is no book in this library yet!")
+        print("There are no books in this library yet!")
     else:
-        print(books_dict)
+        for book in books_dict.keys():
+            print(f"Title: {book}, Author: {books_dict[book]['author']}, Quantity: {books_dict[book]['quantity']}")
+
 
 def admin_panel():
-    print("----Admin Panel----")
-    print("1. View books \n2. Add book \n3. Borrowing \n4. Exit")
-    user_choice = input("Type 1/2/3/4: ") 
+    while True:
+        print("----Admin Panel----")
+        print("1. View books \n2. Add book \n3. Borrowing \n4. Exit")
+        user_choice = input("Type 1/2/3/4: ") 
      
-    if user_choice == '1':
-        view_books()
-    elif user_choice == '2':
-        add_book()
-    elif user_choice == '3':
-        borrow_book()
-    elif user_choice == '4':
-        return
+    
+        if user_choice == '1':
+            view_books()
+        elif user_choice == '2':
+            add_book()
+        elif user_choice == '3':
+            borrow_book()
+        elif user_choice == '4':
+            break
     
         
 
@@ -149,6 +182,10 @@ def main():
         status, user = login()
     elif user_log == "register":
         register()
+    else:
+        print("You can only login or register in here!")
+        return
+    
     
     
     if status == 1:
