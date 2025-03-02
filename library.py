@@ -144,7 +144,33 @@ def borrow_book():
         file.write("|".join(book_entries))  # Store in the same format
 
     print("Library records updated successfully!")
+    
+    reader = input("Enter name of the reader: ")
+    student_id = input("Enter the id: ")
+
+    reader_dict = {student_id:{"name":reader,"book":book_name}}
+    filename = 'reader.txt'
+    with open(filename) as file:
+        data = file.read()
+    try:
+        if data:
+            existing_books_list = data.split("|")
+        else:
+            existing_books_list = []
+            
+    except FileNotFoundError:
+        existing_books_list = []
+    
+    with open(filename, 'a') as file:
+        books_json = json.dumps(reader_dict)
+        if len(existing_books_list)>0:
+            file.write('|')
+        file.write(books_json)
+        print("Reader information added!")
         
+ 
+def return_book():
+    pass       
     
 
 def view_books():
